@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 
 	"github.com/bwmarrin/discordgo"
@@ -17,8 +16,7 @@ func main() {
 
 	err = dg.Open()
 	if err != nil {
-		fmt.Println("error opening connection,", err)
-		return
+		log.Fatalf("error opening connection, %s", err)
 	}
 }
 

@@ -7,20 +7,20 @@ import (
 	"github.com/spf13/viper"
 )
 
-type discord struct {
-	token			string
+type Discord struct {
+	Token			string
 }
-type youtube struct {
-	token 		string
+type Youtube struct {
+	Token 		string
 }
-type spotify struct {
-	token	string
+type Spotify struct {
+	Token	string
 }
 
 type Config struct {
-	discord		*discord
-	youtube		*youtube
-	spotify		*spotify
+	Discord		*Discord
+	Youtube		*Youtube
+	Spotify		*Spotify
 }
 
 func NewConf(path string) *Config {
@@ -38,14 +38,14 @@ func NewConf(path string) *Config {
 	
 
 	conf := &Config{
-		discord: &discord{
-			token: viper.GetString("app.discord.token"),
+		Discord: &Discord{
+			Token: viper.GetString("app.discord.token"),
 		},
-		youtube: &youtube{
-			token: viper.GetString("app.youtube.token"),
+		Youtube: &Youtube{
+			Token: viper.GetString("app.youtube.token"),
 		},
-		spotify: &spotify{
-			token: viper.GetString("app.spotify.token"),
+		Spotify: &Spotify{
+			Token: viper.GetString("app.spotify.token"),
 		},
 	}
 
