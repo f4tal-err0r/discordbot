@@ -6,7 +6,7 @@ build:
   artifacts:
   - image: ymekuria/primary_repo
     docker:
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.private
 deploy:
   kubectl:
     manifests:
