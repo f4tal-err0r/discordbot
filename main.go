@@ -2,20 +2,19 @@ package main
 
 import (
 	"fmt"
+	"log"
+	"flags"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/f4tal-err0r/discordbot/config"
 )
 
 var (
-	conf	*Config
-	path	string
+	DSession	*discordgo.session
 )
 
-func init() {
-	path = ParseFlags()
-	conf = NewConf(path)
-}
-
 func main() {
-	
+	conf := config.NewConf("./config")
+
+	discord, err := discordgo.New("Bot " + conf.token)
 }

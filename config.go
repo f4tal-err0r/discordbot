@@ -1,57 +1,50 @@
-package main
+package config
 
 import (
 	"flag"
 	"fmt"
 	"os"
 
-	"gopkg.in/yaml.v2"
+	"github.com/spf13/viper"
 )
 
 type Config struct {
-	token	string	`yaml:"token"`
-	YTToken string  `yaml:"YTToken`
+	type discord struct {
+		token			string
+	}
+	type youtube struct {
+		token 		string
+	}
+	type spotify struct {
+		token	string
+	}
 }
 
-func NewConf(path string) (*Config, error) {
-	//init config
-	config := &Config{}
+func NewConf(path string) *Config {
+	viper.SetConfigName("default")
+	viper.SetConfigType("yaml")
+	viper.AddConfigPath(".")
+	viper.AddConfigPath(path)
+	viper.AutomaticEnv()
 
-	if err := PathValidator(path); err != nil {
-		return nil, err
-	}
-
-	file, err := os.Open(path)
+	err := viper.ReadInConfig()
 	if err != nil {
-		return nil, err
+			fmt.Println("fatal error config file: default \n", err)
+			os.Exit(1)
 	}
-	defer file.Close()
+	
 
-	d := yaml.NewDecoder(file)
-
-	if err := d.Decode(&config); err != nil {
-		return nil, err
-	}
-
-	return config, nil
-}
-
-func ParseFlags() (string, error) {
-	var path string
-	flag.StringVar(&path, "config", "./config.yml", "path to config file")
-	if err := PathValidator(path); err != nil {
-		return "", err
+	conf := &Config{
+		discord{
+			token: viper.GetString("app.discord.token")
+		}
+		youtube{
+			token: viper.GetString("app.youtube.token")
+		}
+		spotify{
+			token: viper.GetString("app.spotify.token")
+		}
 	}
 
-	return path, nil
-}
-
-func PathValidator(path string) error {
-	s, err := os.Stat(path)
-	if err != nil {
-		return err
-	}
-	if s.IsDir() {
-		return fmt.Errorf("%s is a dir, not a file.", path)
-	}
+	return conf
 }

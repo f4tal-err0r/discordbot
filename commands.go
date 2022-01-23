@@ -7,8 +7,8 @@ import (
 
 var (
 	commands = []*discordgo.ApplicationCommand{
-	{
-		
+
 	}
-	}
+
+	commandHandler = 
 )
