@@ -24,9 +24,8 @@ type Config struct {
 }
 
 func NewConf(path string) *Config {
-	viper.SetConfigName("default")
+	viper.SetConfigName("config")
 	viper.SetConfigType("yaml")
-	viper.AddConfigPath(".")
 	viper.AddConfigPath(path)
 	viper.AutomaticEnv()
 

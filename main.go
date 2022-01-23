@@ -10,7 +10,7 @@ import (
 func main() {
 	conf := config.NewConf("./config")
 
-	dg, err := discordgo.New("Bot " + conf.discord.token)
+	dg, err := discordgo.New("Bot " + conf.Discord.Token)
 
 	dg.AddHandler(messageCreate)
 
