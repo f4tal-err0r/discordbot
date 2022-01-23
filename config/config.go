@@ -1,9 +1,7 @@
 package config
 
 import (
-	"flag"
-	"fmt"
-	"os"
+
 
 	"github.com/spf13/viper"
 )
@@ -40,14 +38,14 @@ func NewConf(path string) *Config {
 
 	conf := &Config{
 		discord: &discord{
-			token: viper.GetString("app.discord.token")
-		}
+			token: viper.GetString("app.discord.token"),
+		},
 		youtube: &youtube{
-			token: viper.GetString("app.youtube.token")
-		}
+			token: viper.GetString("app.youtube.token"),
+		},
 		spotify: &spotify{
-			token: viper.GetString("app.spotify.token")
-		}
+			token: viper.GetString("app.spotify.token"),
+		},
 	}
 
 	return conf
