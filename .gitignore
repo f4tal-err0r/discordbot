@@ -1,4 +1,4 @@
 skaffold.yaml
-deploy/
+deploy/*
 config.yaml
 *.private
