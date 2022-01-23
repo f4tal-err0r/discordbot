@@ -24,8 +24,9 @@ type Config struct {
 }
 
 func NewConf(path string) *Config {
-	viper.SetConfigName("config")
+	viper.SetConfigName("discordbot-config")
 	viper.SetConfigType("yaml")
+	viper.AddConfigPath("..")
 	viper.AddConfigPath(path)
 	viper.AutomaticEnv()
 
