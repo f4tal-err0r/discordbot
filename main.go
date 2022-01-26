@@ -5,23 +5,20 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"context"
 
-	"github.com/bwmarrin/discordgo"
+	"github.com/diamondburned/arikawa/v3/state"
 	"github.com/f4tal-err0r/discordbot/config"
 )
+
+var dg *state.State
 
 func main() {
 	conf := config.NewConf("./config.yaml")
 
-	dg, err := discordgo.New("Bot " + conf.Discord.Token)
-
-	dg.AddHandler(messageCreate)
-
-	dg.Identify.Intents = discordgo.IntentsGuildMessages
-
-	err = dg.Open()
-	if err != nil {
-		log.Fatalf("error opening connection, %s", err)
+	err := state.New("Bot " + conf.Discord.Token)
+	if err := dg.Open(context.Background()); err != nil {
+		log.Fatalln("failed to open:", err)
 	}
 
 	log.Println("Bot is now running.  Press CTRL-C to exit.")
@@ -31,22 +28,4 @@ func main() {
 
 	// Cleanly close down the Discord session.
 	dg.Close()
-}
-
-func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
-
-
-	if m.Author.ID == s.State.User.ID {
-		return
-	}
-	
-	if m.Content == "ping" {
-		log.Println("ping")
-		s.ChannelMessageSend(m.ChannelID, "Pong!")
-	}
-
-	if m.Content == "pong" {
-		log.Println("pong")
-		s.ChannelMessageSend(m.ChannelID, "Ping!")
-	}
 }
