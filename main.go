@@ -8,18 +8,23 @@ import (
 	"context"
 
 	"github.com/diamondburned/arikawa/v3/state"
+	"github.com/diamondburned/arikawa/v3/gateway"
 	"github.com/f4tal-err0r/discordbot/config"
 )
 
-var dg *state.State
 
 func main() {
 	conf := config.NewConf("./config.yaml")
 
-	err := state.New("Bot " + conf.Discord.Token)
+	dg := state.New("Bot " + conf.Discord.Token)
+
+	dg.AddIntents(gateway.IntentGuilds)
+	dg.AddIntents(gateway.IntentGuildMessages)
 	if err := dg.Open(context.Background()); err != nil {
 		log.Fatalln("failed to open:", err)
 	}
+
+	initConfig(dg)
 
 	log.Println("Bot is now running.  Press CTRL-C to exit.")
 	sc := make(chan os.Signal, 1)

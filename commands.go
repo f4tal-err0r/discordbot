@@ -1,56 +1,48 @@
 package main
 
 import (
-	"os"
 	"log"
 
 	"github.com/diamondburned/arikawa/v3/api"
 	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/diamondburned/arikawa/v3/gateway"
+	"github.com/diamondburned/arikawa/v3/state"
 	"github.com/diamondburned/arikawa/v3/utils/json/option"
 
 )
 
 var (
-	commands = []*discord.Command{
+	commands = []discord.Command{
 		{
 			Name: "ping",
 			Description: "Basic ping",
 		},
+		{
+			Name: "hiscore",
+			Description: "Get score of all discord members over a week of shitposting.",
+		},
 	}
 
-	commandHandlers = map[string]func(e *gateway.InteractionCreateEvent){
-			"ping": func(e *gateway.InteractionCreateEvent) {
-				data := api.InteractionResponse{
+	commandHandlers = map[string]func(e *gateway.InteractionCreateEvent) api.InteractionResponse {
+			"ping": func(e *gateway.InteractionCreateEvent) api.InteractionResponse {
+				return api.InteractionResponse{
 					Type: api.MessageInteractionWithSource,
 					Data: &api.InteractionResponseData{
 						Content: option.NewNullableString("https://c.tenor.com/5LGnXPEJU6AAAAAd/gang.gif"),
 					},
 				}
-		
-				if err := dg.RespondInteraction(e.ID, e.Token, data); err != nil {
-					log.Println("failed to send interaction callback:", err)
-				}
 			},
 		}
 )
 
-func init() {
+func initConfig(dg *state.State) {
 
-	guildID := discord.GuildID(mustSnowflakeEnv("GUILD_ID"))
-
-	token := os.Getenv("BOT_TOKEN")
-	if token == "" {
-		log.Fatalln("No $BOT_TOKEN given.")
-	}
+	guildID := discord.GuildID(mustSnowflakeEnv("236649685639495680"))
 
 	app, err := dg.CurrentApplication()
 	if err != nil {
 		log.Fatalln("Failed to get application ID:", err)
 	}
-
-	dg.AddIntents(gateway.IntentGuilds)
-	dg.AddIntents(gateway.IntentGuildMessages)
 
 	log.Println("Gateway connected. Getting all guild commands.")
 
@@ -63,22 +55,25 @@ func init() {
 		log.Println("Existing command", command.Name, "found.")
 	}
 
-	dg.AddHandler(func(i *gateway.InteractionCreateEvent) {
-		if h, ok := commandHandlers; ok {
-			h(i)
+	dg.AddHandler(func(e *gateway.InteractionCreateEvent) {
+		if h, ok := commandHandlers[e.Data.(*discord.CommandInteraction).Name]; ok {
+			data := h(e)
+			if err := dg.RespondInteraction(e.ID, e.Token, data); err != nil {
+				log.Println("failed to send interaction callback:", err)
+			}
+		} else {
+			log.Printf("ERROR: %s does not have a command handler", e.Data.(*discord.CommandInteraction).Name )
 		}
 	})
 
-	for _, v := range commands {
-		_, err := dg.BulkOverwriteGuildCommands(app.ID, guildID, v)
+		_, err = dg.BulkOverwriteGuildCommands(app.ID, guildID, commands)
 		if err != nil {
-			log.Panicf("Cannot create '%v' command: %v", v.Name, err)
+			log.Fatalln("failed to create guild command:", err)
 		}
-	}
 }
 
 func mustSnowflakeEnv(env string) discord.Snowflake {
-	s, err := discord.ParseSnowflake(os.Getenv(env))
+	s, err := discord.ParseSnowflake(env)
 	if err != nil {
 		log.Fatalf("Invalid snowflake for $%s: %v", env, err)
 	}
