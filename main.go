@@ -24,7 +24,7 @@ func main() {
 		log.Fatalln("failed to open:", err)
 	}
 
-	initConfig(dg)
+	initCommands(dg)
 
 	log.Println("Bot is now running.  Press CTRL-C to exit.")
 	sc := make(chan os.Signal, 1)

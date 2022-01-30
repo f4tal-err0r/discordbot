@@ -3,6 +3,8 @@ package main
 import (
 	"log"
 
+	"github.com/f4tal-err0r/discordbot/hiscore"
+
 	"github.com/diamondburned/arikawa/v3/api"
 	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/diamondburned/arikawa/v3/gateway"
@@ -19,7 +21,7 @@ var (
 		},
 		{
 			Name: "hiscore",
-			Description: "Get score of all discord members over a week of shitposting.",
+			Description: "Highest shitposter over the last 7 days",
 		},
 	}
 
@@ -32,12 +34,21 @@ var (
 					},
 				}
 			},
+			"hiscore": func(e *gateway.InteractionCreateEvent) api.InteractionResponse {
+				hiscore.Calc(e)
+				return api.InteractionResponse{
+					Type: api.MessageInteractionWithSource,
+					Data: &api.InteractionResponseData{
+						Content: option.NewNullableString("Processing messages to logs"),
+					},
+				}
+			},
 		}
 )
 
-func initConfig(dg *state.State) {
+func initCommands(dg *state.State) {
 
-	guildID := discord.GuildID(mustSnowflakeEnv("236649685639495680"))
+	guildID := discord.GuildID(discord.GuildID(mustSnowflakeEnv("236649685639495680")))
 
 	app, err := dg.CurrentApplication()
 	if err != nil {
