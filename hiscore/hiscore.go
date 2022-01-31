@@ -18,7 +18,7 @@ func fetchMessages(apiClient *api.Client, channel discord.ChannelID) ([]discord.
 
 	return apiClient.MessagesAfter(channel, discord.MessageID(s), 0)
 }
-
+//TODO: This takes too long, need a loading feature to get around the timeout
 func Calc(e *gateway.InteractionCreateEvent) {
 	conf := config.NewConf("./config.yaml")
 	m := make(map[string]int)
