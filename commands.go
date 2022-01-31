@@ -13,6 +13,8 @@ import (
 
 )
 
+var GitCommit string
+
 var (
 	commands = []discord.Command{
 		{
@@ -22,6 +24,10 @@ var (
 		{
 			Name: "hiscore",
 			Description: "Highest shitposter over the last 7 days",
+		},
+		{
+			Name: "version",
+			Description: "Data on the running version of the bot",
 		},
 	}
 
@@ -43,8 +49,20 @@ var (
 					},
 				}
 			},
+			"version": func(e *gateway.InteractionCreateEvent) api.InteractionResponse {
+				return api.InteractionResponse{
+					Type: api.MessageInteractionWithSource,
+					Data: &api.InteractionResponseData{
+						Content: option.NewNullableString("Commit ID: " + GitCommit + "\nCodebase: https://github.com/f4tal-err0r/discordbot"),
+					},
+				}
+			},
 		}
 )
+
+// func loading(e *gateway.InteractionCreateEvent) {
+
+// }
 
 func initCommands(dg *state.State) {
 
@@ -56,6 +74,10 @@ func initCommands(dg *state.State) {
 	}
 
 	log.Println("Gateway connected. Getting all guild commands.")
+
+	// s, err := discord.ParseSnowflake("304644473705725953")
+
+	// dg.SendMessage(discord.ChannelID(discord.Snowflake(s)), "Writing code to send messages, but I was also working on it and matt is delaying development")
 
 	oldcommands, err := dg.GuildCommands(app.ID, guildID)
 	if err != nil {

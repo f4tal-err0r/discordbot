@@ -1,9 +1,12 @@
 FROM golang:1.17
-WORKDIR "/go/src/github.com/f4tal-err0r/discordbot"
+WORKDIR /app
 COPY *.go ./
 COPY go.* ./
-COPY config/* ./config/
+COPY config/ ./config/
+COPY hiscore/ ./hiscore/
+COPY .git/ ./.git/
 RUN go mod download
-RUN go build -o /app/discordbot .
-WORKDIR /app
+RUN GIT_COMMIT=$(git rev-list -1 HEAD) && \
+    go build -ldflags "-X main.GitCommit=$GIT_COMMIT" -o /app/discordbot .
+
 CMD [ "./discordbot" ]
